@@ -6,4 +6,4 @@
 
 ___
 
-**Please see this document for more information. →** [diff_bot_documentation](https://takagon-dynamics.github.io/diff_bot_documentation/)
+**Please see this document for more information. →** [***Diff Bot* Documentation**](https://takagon-dynamics.github.io/diff_bot_documentation/)
