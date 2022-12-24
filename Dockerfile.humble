@@ -1,0 +1,32 @@
+FROM microros/micro-ros-agent:humble
+
+SHELL ["/bin/bash", "-c"]
+
+RUN apt update && apt upgrade -y && \ 
+  apt install -y \
+  build-essential \
+  curl \
+  git \
+  python3-colcon-common-extensions \
+  python3-rosdep \
+  python3-vcstool \
+  vim 
+
+RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /root/.bashrc && \
+  echo "source /root/catkin_ws/install/setup.bash" >> /root/.bashrc && \
+  mkdir /root/catkin_ws/src/ -p && \
+  curl -sL "https://raw.githubusercontent.com/takagon-dynamics/diff_bot/main/diff_bot.repos" -o /tmp/diff_bot.repos && \
+  vcs import /root/catkin_ws/src/ < /tmp/diff_bot.repos --debug --recursive && \
+  rm -rf /root/catkin_ws/src/diff_bot_navigation /root/catkin_ws/src/diff_bot_slam && \
+  cd /root/catkin_ws && \
+  rosdep init && rosdep update && \
+  rosdep install -r -y --from-paths --ignore-src ./ && \
+  source /opt/ros/$ROS_DISTRO/setup.bash && \
+  colcon build && \
+  : "remove cache" && \
+  apt-get autoremove -y -qq && \
+  rm -rf /var/lib/apt/lists/*
+
+WORKDIR /root/catkin_ws/
+ENTRYPOINT ["/bin/sh", "/micro-ros_entrypoint.sh"]
+CMD ["--help"]
